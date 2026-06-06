@@ -13,7 +13,7 @@ Minimal GitHub Pages website.
    Settings -> Pages -> Deploy from branch -> main
 
 4. Visit:
-   https://nfma-chatbot.github.io
+   [https://nfma-chatbot.github.io](https://baridhi.github.io/nfma-chatbot)
 
 ## Adding new sections
 
