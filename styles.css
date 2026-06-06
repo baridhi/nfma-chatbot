@@ -1,3 +1,11 @@
+/* style for dropdown model selection */
+#pgpt-model-selector {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  font-size: 11px;
+  color: #123b6d;
+  padding: 4px;
+}
 
 body{
 font-family: Arial, Helvetica, sans-serif;
