@@ -319,7 +319,7 @@
 
       <div id="pgpt-footer">
         Powered by <a href="https://github.com/baridhi/privateGPT_cfa" target="_blank">PrivateGPT</a>
-        · runs locally on your laptop
+        · runs locally Baridhi's laptop
       </div>
     </div>
   `);
