@@ -402,6 +402,17 @@
     });
   }
 
+  // to sync web front end with backend
+async function syncModelWithBackend() {
+    try {
+        const r = await fetch(`${API_BASE}/health`);
+        const d = await r.json();
+        const selector = document.getElementById("pgpt-model-selector");
+        if (d.model) selector.value = d.model;
+    } catch(e) {}
+}
+syncModelWithBackend();
+  
   checkHealth();
   setInterval(checkHealth, 20_000);
 
