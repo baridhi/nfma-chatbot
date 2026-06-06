@@ -44,6 +44,7 @@
     return;
   }
 
+
   /* ── Inject CSS ─────────────────────────────────────────────────────────── */
   const css = `
   #pgpt-fab {
@@ -82,12 +83,16 @@
 
   #pgpt-panel {
     position: fixed;
+  top: 50%;         /* Add this */
+  left: 50%;        /* Add this */    
     bottom: 96px;
     ${POSITION}: 18px;
     z-index: 9999;
-    width: 370px;
+    /* width: 370px; */
+    width: 70vw;
     max-width: calc(100vw - 36px);
-    height: 520px;
+    /* height: 520px; */
+    height: 70vh;
     max-height: calc(100vh - 120px);
     border-radius: 18px;
     box-shadow: 0 12px 48px rgba(0,0,0,0.22);
@@ -98,15 +103,23 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 14px;
     opacity: 0;
-    transform: translateY(16px) scale(0.97);
+  /*  transform: translateY(16px) scale(0.97); */
+    transform: translate(-50%, -50%) scale(0.97); /* Updated for centering */
     pointer-events: none;
     transition: opacity 0.22s ease, transform 0.22s ease;
   }
-  #pgpt-panel.open {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: all;
-  }
+  // #pgpt-panel.open {
+  //   opacity: 1;
+  //   transform: translateY(0) scale(1);
+  //   pointer-events: all;
+  // }
+
+/* Also update the animation to maintain centering */
+#pgpt-panel.open {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1); /* Updated for centering */
+  pointer-events: all;
+}
 
   /* header */
   #pgpt-header {
