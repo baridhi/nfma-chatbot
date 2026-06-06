@@ -323,8 +323,10 @@
 
 <!-- Adding Dropdown -->
   <select id="pgpt-model-selector" style="margin-right: 10px; cursor: pointer; border-radius: 4px; padding: 2px;">
+  <option value="" disabled selected>Select an LLM model...</option>
     ${AVAILABLE_MODELS.map(m => `<option value="${m}">${m}</option>`).join("")}
   </select>
+
 
       <div id="pgpt-offline">⚠️ API offline — make sure the laptop tunnel is running.</div>
 
