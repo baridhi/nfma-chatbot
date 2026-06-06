@@ -38,6 +38,8 @@
     "Ask me about the papers, data, or methods on this site.";
   const ACCENT     = scriptEl.dataset.accent   || "#2c3e7a";
   const POSITION   = scriptEl.dataset.position === "left" ? "left" : "right";
+  // List of LLMs supported in the dropdown
+  const AVAILABLE_MODELS = ["llama3:latest", "mistral:latest", "tinyllama:latest","deepseek-r1:latest","zephyr:latest","mistral-openorca:latest"];
 
   if (!API_BASE) {
     console.warn("[pgpt-widget] data-api attribute is missing — widget disabled.");
@@ -319,6 +321,11 @@
         <button id="pgpt-close" aria-label="Close">✕</button>
       </div>
 
+<!-- Adding Dropdown -->
+  <select id="pgpt-model-selector" style="margin-right: 10px; cursor: pointer; border-radius: 4px; padding: 2px;">
+    ${AVAILABLE_MODELS.map(m => `<option value="${m}">${m}</option>`).join("")}
+  </select>
+
       <div id="pgpt-offline">⚠️ API offline — make sure the laptop tunnel is running.</div>
 
       <div id="pgpt-messages"></div>
@@ -433,6 +440,8 @@
   /* ── Send ───────────────────────────────────────────────────────────────── */
   async function send() {
     const q = input.value.trim();
+    // Get the selected model from the dropdown
+    const model = document.getElementById("pgpt-model-selector").value;
     if (!q) return;
     appendMsg("user", esc(q));
     input.value = "";
