@@ -1,4 +1,4 @@
-# nfma-chatbot.github.io
+# [NFMA chatbot](https://baridhi.github.io/nfma-chatbot)
 
 Minimal GitHub Pages website. This webpage is powered by a local RAG pipeline ("privateGPT") described in more detail [here](https://github.com/baridhi/privateGPT_cfa)
 
