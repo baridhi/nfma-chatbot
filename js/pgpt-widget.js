@@ -214,6 +214,12 @@
     font-size: 10.5px;
   }
 
+// increment - to introduce source links
+  .pgpt-src-link, .pgpt-src-page { color: ${ACCENT}; text-decoration: none; }
+  .pgpt-src-link:hover, .pgpt-src-page:hover { text-decoration: underline; }
+  .pgpt-src-page { margin-left: 5px; padding-left: 5px; border-left: 1px solid #dde; font-weight: 600; }
+
+  
   /* typing dots */
   .pgpt-dots { display: flex; gap: 4px; align-items: center; padding: 2px 0; }
   .pgpt-dots span {
@@ -419,10 +425,37 @@ syncModelWithBackend();
   setInterval(checkHealth, 20_000);
 
   /* ── Messaging ──────────────────────────────────────────────────────────── */
+  // function esc(s) {
+  //   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  // }
   function esc(s) {
-    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
+  /* ── Source manifest: maps ingested filename -> hosted PDF ── */
+  const SOURCES_URL = scriptEl.dataset.sources || "sources.json";
+  let sourceMap = {};
+  fetch(new URL(SOURCES_URL, document.baseURI))
+    .then(r => r.json())
+    .then(m => { sourceMap = m || {}; })
+    .catch(() => console.warn("[pgpt-widget] could not load", SOURCES_URL));
+
+  function renderSource(s) {
+    const file  = typeof s === "string" ? s : s.file;
+    const pages = typeof s === "string" ? [] : (s.pages || []);
+    const meta  = sourceMap[file];
+    if (!meta) return `<span class="pgpt-src-tag">${esc(file)}</span>`;
+
+    const href = esc(new URL(meta.url, document.baseURI).href);
+    const icon = meta.type === "presentation" ? "📊" : "📄";
+    const pageLinks = pages.map(p =>
+      `<a class="pgpt-src-page" href="${href}#page=${Number(p)}" target="_blank" rel="noopener">p.${Number(p)}</a>`
+    ).join("");
+    return `<span class="pgpt-src-tag">` +
+             `<a class="pgpt-src-link" href="${href}" target="_blank" rel="noopener">${icon} ${esc(meta.title || file)}</a>` +
+             `${pageLinks}</span>`;
+  }
+  
   function appendMsg(role, html) {
     const id = `pgpt-${++msgId}`;
     const avatar = role === "user" ? "🧑" : "🤖";
@@ -437,7 +470,8 @@ syncModelWithBackend();
 
   function appendBotMsg(text, sources) {
     const srcHtml = sources && sources.length
-      ? `<div class="pgpt-sources">Sources: ${sources.map(s=>`<span class="pgpt-src-tag">${esc(s)}</span>`).join("")}</div>`
+      // ? `<div class="pgpt-sources">Sources: ${sources.map(s=>`<span class="pgpt-src-tag">${esc(s)}</span>`).join("")}</div>`
+    ? `<div class="pgpt-sources">Sources: ${sources.map(renderSource).join("")}
       : "";
     return appendMsg("bot", esc(text) + srcHtml);
   }
