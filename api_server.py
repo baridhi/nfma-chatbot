@@ -25,7 +25,8 @@ def chat():
     data = request.json or {}
     question = data.get("question", "")
     # Extract the model from the request, fallback to default if not provided
-    selected_model = data.get("model", LLM_MODEL) 
+    # selected_model = data.get("model", LLM_MODEL)
+    selected_model = data.get("model") or LLM_MODEL #to allow for default
     
     if not question:
         return jsonify({"error": "No question provided"}), 400
