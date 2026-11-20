@@ -467,7 +467,8 @@ syncModelWithBackend();
       const r = await fetch(`${API_BASE}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: q }),
+        // body: JSON.stringify({ question: q }), //without model dropdown
+        body: JSON.stringify({ question: q, model }),
         signal: AbortSignal.timeout(120_000),   // LLM can be slow
       });
       const d = await r.json();
