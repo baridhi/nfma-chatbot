@@ -470,8 +470,7 @@ syncModelWithBackend();
 
   function appendBotMsg(text, sources) {
     const srcHtml = sources && sources.length
-      // ? `<div class="pgpt-sources">Sources: ${sources.map(s=>`<span class="pgpt-src-tag">${esc(s)}</span>`).join("")}</div>`
-    ? `<div class="pgpt-sources">Sources: ${sources.map(renderSource).join("")}
+      ? `<div class="pgpt-sources">Sources: ${sources.map(renderSource).join("")}</div>`
       : "";
     return appendMsg("bot", esc(text) + srcHtml);
   }
