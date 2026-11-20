@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import json
 from pathlib import Path
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -7,10 +8,13 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 
 # Configuration paths
-DOCS_DIR = Path("./source_documents")
+# DOCS_DIR = Path("./source_documents")
 DB_DIR = Path("./chroma_db")
 EMBED_MODEL = "nomic-embed-text"
 
+HOSTED = {"whitepaper": Path("./docs"), "presentation": Path("./presentations")}
+MANIFEST = Path("./sources.json")
+'''
 def load_documents():
     documents = []
     for file_path in DOCS_DIR.iterdir():
@@ -23,10 +27,38 @@ def load_documents():
             loader = PyPDFLoader(str(file_path))
             documents.extend(loader.load())
     return documents
+'''
+# new version of Nov 2026
+def load_documents():
+    documents, files = [], []
+    for doc_type, folder in HOSTED.items():
+        for fp in sorted(folder.glob("*.pdf")):
+            if any(fp.name == f.name for _, f in files):
+                raise SystemExit(f"Duplicate filename across folders: {fp.name}")
+            print(f"Loading {doc_type}: {fp.name}")
+            documents.extend(PyPDFLoader(str(fp)).load())
+            files.append((doc_type, fp))
+    return documents, files
 
+def write_manifest(files):
+    old = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
+    manifest = {
+        fp.name: {
+            # keep hand-edited titles; otherwise derive from filename
+            "title": old.get(fp.name, {}).get("title")
+                     or fp.stem.replace("_", " ").replace("-", " ").title(),
+            "type": doc_type,
+            "url": fp.as_posix(),          # e.g. docs/whitepaper.pdf
+        }
+        for doc_type, fp in files
+    }
+    MANIFEST.write_text(json.dumps(manifest, indent=2))
+    print(f"Wrote {MANIFEST} ({len(manifest)} documents)")
+    
 def main():
     # 1. Gather all documents from the source folder
-    raw_docs = load_documents()
+    # raw_docs = load_documents()
+    raw_docs, files = load_documents() #updated Nov 2026
     if not raw_docs:
         print("No documents found in source_documents/. Exiting.")
         return
@@ -47,6 +79,7 @@ def main():
         persist_directory=str(DB_DIR)
     )
     print("Database built and saved successfully!")
+    write_manifest(files)
 
 if __name__ == "__main__":
     main()
