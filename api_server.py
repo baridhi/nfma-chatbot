@@ -20,6 +20,19 @@ embeddings = OllamaEmbeddings(model=EMBED_MODEL)
 db = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
 print("Vector store connected successfully.")
 
+def build_sources(docs):
+    by_file = {}
+    for doc in docs:
+        fname = os.path.basename(doc.metadata.get("source", "Unknown"))
+        entry = by_file.setdefault(fname, {"file": fname, "pages": []})
+        page = doc.metadata.get("page")
+        if isinstance(page, int) and (page + 1) not in entry["pages"]:
+            entry["pages"].append(page + 1)   # PyPDFLoader is 0-indexed
+    for entry in by_file.values():
+        entry["pages"].sort()
+    return list(by_file.values())
+
+
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json or {}
@@ -35,7 +48,8 @@ def chat():
         # 1. Retrieve the top 3 closest text snippets
         docs = db.similarity_search(question, k=3)
         context_text = "\n\n".join([doc.page_content for doc in docs])
-        sources = list(set([os.path.basename(doc.metadata.get("source", "Unknown")) for doc in docs]))
+        # sources = list(set([os.path.basename(doc.metadata.get("source", "Unknown")) for doc in docs])) #older
+        sources = build_sources(docs) #with source links via json
 
         # 2. Build the RAG Prompt context
         prompt = f"""You are a helpful research assistant. Answer the user's question accurately using ONLY the provided context...
